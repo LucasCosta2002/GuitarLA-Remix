@@ -2,6 +2,7 @@ import {Meta, Links, Outlet, Scripts, LiveReload, useCatch, Link} from '@remix-r
 import Header from '~/components/header'
 import styles from '~/styles/index.css'
 import Footer from '~/components/footer'
+import { useState, useEffect } from 'react'
 
 export function meta(){
     return (
@@ -36,9 +37,58 @@ export function links(){
 }
 
 export default function App(){
+
+    const carritoLS = typeof window !== "undefined" ? JSON.parse(localStorage.getItem('carrito')) ?? [] : null;
+    const [carrito, setCarrito] = useState(carritoLS)
+
+    useEffect(() => {
+        localStorage.setItem('carrito', JSON.stringify(carrito))
+    }, [carrito])
+    
+
+
+    function agregarCarrito(guitarra){
+        if(carrito.some( guitarraState => guitarraState.id === guitarra.id)){
+            // iterar sobre el array e identificar el elemento duplicado
+            const carritoActualizado = carrito.map(guitarraState => {
+                if(guitarraState.id === guitarra.id){
+                    guitarraState.cantidad = guitarra.cantidad
+                }
+                return guitarraState
+            })
+
+            setCarrito(carritoActualizado)
+        }else{
+            // registro nuevo
+            setCarrito([...carrito, guitarra])
+        }
+    }
+
+    function actualizarCantidad(guitarra){
+        const carritoActualizado = carrito.map( guitarraState => {
+            if(guitarraState.id === guitarra.id){
+                guitarraState.cantidad = guitarra.cantidad
+            }
+            return guitarraState
+        })
+        setCarrito(carritoActualizado)
+    }
+
+    function eliminarGuitarra(id){
+        const carritoActualizado = carrito.filter( guitarraState => guitarraState.id !== id)
+        setCarrito(carritoActualizado)
+    }
+
     return (
         <Document>
-            <Outlet/>
+            <Outlet
+                context={{
+                    agregarCarrito,
+                    carrito,
+                    actualizarCantidad,
+                    eliminarGuitarra
+                }}
+            />
         </Document>
     )
 }
