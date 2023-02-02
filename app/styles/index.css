@@ -484,6 +484,15 @@
     text-align: center;
 }
 
+.footer .redes {
+  text-decoration: none;
+  color: var(--white);
+}
+
+.footer .redes:hover{
+  color: var(--primary);
+}
+
 .error, .error-enlace{
   font-size: 2.4rem;
   text-align: center;
